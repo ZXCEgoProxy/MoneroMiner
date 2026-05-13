@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
+#include <cstdlib>
 #include "Utils.h"
 
 Config::Config() {
@@ -14,19 +15,49 @@ Config::Config() {
 }
 
 void Config::setDefaults() {
-    // Current pool (high difficulty):
-    poolAddress = "xmr-us-east1.nanopool.org";
-    poolPort = 10300;
-    walletAddress = "8C6hFb4Buo6dYwJiZEaFhyYhZTJaR4NyXSBzKMF1BnNKMGD92yeaY3a9PxuWp9bhTAh6dAXwqyyLfFxaPRct7j81L8t4iK2"; // Default test wallet
-    workerName = "worker1";
-    password = "x";  // Some pools require non-empty password
+    // Get values from environment variables if available, otherwise use defaults
+    const char* envPoolAddr = getenv("POOL_ADDRESS");
+    poolAddress = envPoolAddr ? envPoolAddr : "xmr-us-east1.nanopool.org";
+
+    const char* envPoolPort = getenv("POOL_PORT");
+    if (envPoolPort) {
+        try {
+            poolPort = std::stoi(envPoolPort);
+        } catch (...) {
+            poolPort = 10300;
+        }
+    } else {
+        poolPort = 10300;
+    }
+
+    const char* envWallet = getenv("WALLET_ADDRESS");
+    walletAddress = envWallet ? envWallet : "8C6hFb4Buo6dYwJiZEaFhyYhZTJaR4NyXSBzKMF1BnNKMGD92yeaY3a9PxuWp9bhTAh6dAXwqyyLfFxaPRct7j81L8t4iK2"; // Default test wallet
+
+    const char* envWorker = getenv("WORKER_NAME");
+    workerName = envWorker ? envWorker : "worker1";
+
+    const char* envPassword = getenv("PASSWORD");
+    password = envPassword ? envPassword : "x";
+
+    const char* envThreads = getenv("THREADS");
+    if (envThreads) {
+        try {
+            numThreads = std::stoi(envThreads);
+        } catch (...) {
+            numThreads = 1;
+        }
+    } else {
+        numThreads = 1; // Optimized for Railway 2vCPU
+    }
+
+    const char* envLightMode = getenv("LIGHT_MODE");
+    useLightMode = envLightMode && (std::string(envLightMode) == "true" || std::string(envLightMode) == "1");
+
     userAgent = "MoneroMiner/1.0.0";
-    numThreads = 1; // Optimized for Railway 2vCPU
     debugMode = false;  // This should be overridden by --debug flag
     useLogFile = false;
     logFileName = "monerominer.log";
     headlessMode = false; // Initialize headless mode flag
-    useLightMode = false; // Use full RandomX mode by default
 }
 
 bool Config::parseCommandLine(int argc, char* argv[]) {
