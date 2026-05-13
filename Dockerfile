@@ -29,5 +29,5 @@ RUN chmod +x bin/monerominer
 # No ports need to be exposed for mining (outbound connections only)
 
 # Default command uses environment variables set in Railway
-# Railway automatically provides these as shell variables
-CMD ./bin/monerominer --wallet ${WALLET_ADDRESS} --pool ${POOL_ADDRESS}:${POOL_PORT:-10300} --worker ${WORKER_NAME:-railway-miner} --password ${PASSWORD:-x} --threads ${THREADS:-1}
+# Use light mode for low RAM (1GB), threads=1 for 2vCPU
+CMD ./bin/monerominer --wallet ${WALLET_ADDRESS} --pool ${POOL_ADDRESS:-xmr-us-east1.nanopool.org}:${POOL_PORT:-10300} --worker ${WORKER_NAME:-railway-miner} --password ${PASSWORD:-x} --threads 1 --light-mode

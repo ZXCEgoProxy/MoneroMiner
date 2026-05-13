@@ -18,6 +18,7 @@ public:
     std::string logFileName;
     bool threadCountSpecified = false; // Track if user set --threads
     bool headlessMode;
+    bool useLightMode;
 
     // Constructor
     Config();

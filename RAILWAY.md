@@ -18,6 +18,7 @@ This guide explains how to deploy MoneroMiner to Railway.
    - `POOL_PORT`: Pool port (default: 10300)
    - `WORKER_NAME`: Worker identifier (optional)
    - `PASSWORD`: Pool password (default: x)
+   - `THREADS`: Number of threads (fixed to 1)
    - `THREADS`: Number of mining threads (default: 1)
 
 4. Deploy the application
@@ -26,8 +27,12 @@ This guide explains how to deploy MoneroMiner to Railway.
 
 The miner will automatically:
 - Build RandomX and MoneroMiner
+- Use RandomX light mode (256MB) optimized for 1GB RAM
+- Use 1 mining thread optimized for 2 vCPU
 - Connect to the specified pool
 - Start mining with your wallet address
+
+**Note:** Light mode uses only 256MB cache and produces invalid shares for Monero mining. This configuration is optimized for Railway's resource constraints but will not earn mining rewards. For production mining, upgrade to a plan with more RAM.
 
 ## Monitoring
 

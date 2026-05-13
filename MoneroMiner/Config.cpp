@@ -20,11 +20,12 @@ void Config::setDefaults() {
     workerName = "worker1";
     password = "x";  // Some pools require non-empty password
     userAgent = "MoneroMiner/1.0.0";
-    numThreads = 1;
+    numThreads = 1; // Optimized for Railway 2vCPU
     debugMode = false;  // This should be overridden by --debug flag
     useLogFile = false;
     logFileName = "monerominer.log";
     headlessMode = false; // Initialize headless mode flag
+    useLightMode = false; // Use full RandomX mode by default
 }
 
 bool Config::parseCommandLine(int argc, char* argv[]) {
@@ -69,6 +70,9 @@ bool Config::parseCommandLine(int argc, char* argv[]) {
         else if (arg == "--headless") {
             headlessMode = true;
             useLogFile = true; // Force log file in headless mode
+        }
+        else if (arg == "--light-mode") {
+            useLightMode = true;
         }
     }
     
@@ -144,6 +148,7 @@ void Config::printUsage() const {
     std::cout << "  --worker NAME          Worker name" << std::endl;
     std::cout << "  --password PASS        Pool password (default: x)" << std::endl;
     std::cout << "  --headless             Enable headless mode (no GUI)" << std::endl;
+    std::cout << "  --light-mode           Use RandomX light mode (256MB, for testing/low RAM)" << std::endl;
     std::cout << "\nExample:" << std::endl;
     std::cout << "  MoneroMiner.exe --wallet YOUR_WALLET --threads 4" << std::endl;
 }

@@ -85,11 +85,21 @@ bool RandomXManager::initializeCache(const std::string& seedHash) {
     } else {
         Utils::threadSafePrint("Large pages not available - using normal pages", true);
     }
-    
-    useLightMode = false;
+
+    // Check if light mode is requested via config
+    if (config.useLightMode) {
+        useLightMode = true;
+        flags = cacheAllocFlags; // Remove FULL_MEM flag for light mode
+    } else {
+        useLightMode = false;
+    }
     
     // Log what we're actually using
-    Utils::threadSafePrint("Mode: FULL (2GB dataset)", true);
+    if (useLightMode) {
+        Utils::threadSafePrint("Mode: LIGHT (256MB cache only)", true);
+    } else {
+        Utils::threadSafePrint("Mode: FULL (2GB dataset)", true);
+    }
     Utils::threadSafePrint("Cache flags: 0x" + Utils::formatHex(static_cast<uint64_t>(cacheAllocFlags), 8), true);
     Utils::threadSafePrint("VM/Dataset flags: 0x" + Utils::formatHex(static_cast<uint64_t>(flags), 8), true);
     
