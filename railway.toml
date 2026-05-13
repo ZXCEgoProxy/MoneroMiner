@@ -1,0 +1,6 @@
+# Railway configuration
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "./bin/monerominer --wallet $WALLET_ADDRESS --pool $POOL_ADDRESS:$POOL_PORT --worker $WORKER_NAME --password $PASSWORD --threads 1"

@@ -1,0 +1,32 @@
+# Docker ignore file to reduce image size
+# Ignore build artifacts
+build/
+bin/
+RandomX/build/
+*.o
+*.obj
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Ignore documentation (not needed for runtime)
+*.md
+BUILD.md
+RAILWAY.md
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore Windows-specific files
+*.sln
+*.vcxproj*
+build.ps1
+
+# Ignore logs and temporary files
+*.log
+randomx_dataset*.bin
+monerominer.log
