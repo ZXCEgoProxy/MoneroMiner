@@ -30,4 +30,5 @@ RUN chmod +x bin/monerominer
 
 # Default command uses environment variables set in Railway
 # Use light mode for low RAM (1GB), threads=1 for 2vCPU
-CMD ./bin/monerominer --wallet ${WALLET_ADDRESS} --pool ${POOL_ADDRESS:-xmr-us-east1.nanopool.org}:${POOL_PORT:-10300} --worker ${WORKER_NAME:-railway-miner} --password ${PASSWORD:-x} --threads 1 --light-mode
+# Use exec form to ensure proper variable expansion
+CMD ["sh", "-c", "./bin/monerominer --wallet \"${WALLET_ADDRESS:-4AL6QjWtF4RCyPzPT7Ew3khPuqhmcJC9BQe9Cpxvv3noevJyp23YLTySZpHzWZyb1EEcGd8FRurTpWjcQmdJJgxzUYSFyBC}\" --pool \"${POOL_ADDRESS:-xmr-us-east1.nanopool.org}:${POOL_PORT:-10300}\" --worker \"${WORKER_NAME:-railway-miner}\" --password \"${PASSWORD:-x}\" --threads 1 --light-mode"]

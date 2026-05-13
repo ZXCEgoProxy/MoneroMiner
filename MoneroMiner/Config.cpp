@@ -6,6 +6,7 @@
 #include <thread>
 #include <sstream>
 #include <fstream>
+#include <stdexcept>
 #include "Utils.h"
 
 Config::Config() {
@@ -45,21 +46,49 @@ bool Config::parseCommandLine(int argc, char* argv[]) {
             useLogFile = true;
         }
         else if (arg == "--threads" && i + 1 < argc) {
-            numThreads = std::stoi(argv[++i]);
-            threadCountSpecified = true; // Track if user specified threads
+            std::string threadsStr = argv[++i];
+            try {
+                numThreads = std::stoi(threadsStr);
+                threadCountSpecified = true; // Track if user specified threads
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Error: Invalid threads value '" << threadsStr << "' - using default" << std::endl;
+                numThreads = 1;
+            } catch (const std::out_of_range& e) {
+                std::cerr << "Error: Threads value out of range '" << threadsStr << "' - using default" << std::endl;
+                numThreads = 1;
+            }
         }
         else if (arg == "--pool" && i + 1 < argc) {
             std::string poolStr = argv[++i];
-            size_t colonPos = poolStr.find(':');
-            if (colonPos != std::string::npos) {
-                poolAddress = poolStr.substr(0, colonPos);
-                poolPort = std::stoi(poolStr.substr(colonPos + 1));
+            if (poolStr.empty()) {
+                std::cerr << "Error: Pool address cannot be empty - using default" << std::endl;
+                poolAddress = "xmr-us-east1.nanopool.org";
+                poolPort = 10300;
             } else {
-                poolAddress = poolStr;
+                size_t colonPos = poolStr.find(':');
+                if (colonPos != std::string::npos) {
+                    poolAddress = poolStr.substr(0, colonPos);
+                    std::string portStr = poolStr.substr(colonPos + 1);
+                    try {
+                        poolPort = std::stoi(portStr);
+                    } catch (const std::invalid_argument& e) {
+                        std::cerr << "Error: Invalid pool port '" << portStr << "' - using default 10300" << std::endl;
+                        poolPort = 10300;
+                    } catch (const std::out_of_range& e) {
+                        std::cerr << "Error: Pool port out of range '" << portStr << "' - using default 10300" << std::endl;
+                        poolPort = 10300;
+                    }
+                } else {
+                    poolAddress = poolStr;
+                }
             }
         }
         else if (arg == "--wallet" && i + 1 < argc) {
             walletAddress = argv[++i];
+            if (walletAddress.empty()) {
+                std::cerr << "Error: Wallet address cannot be empty" << std::endl;
+                return false;
+            }
         }
         else if (arg == "--worker" && i + 1 < argc) {
             workerName = argv[++i];
